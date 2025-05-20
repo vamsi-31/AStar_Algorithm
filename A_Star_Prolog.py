@@ -22,7 +22,6 @@ for i in range(A1):
     edge_values_list = list(edge_fact_dict.values()) # Extract values: ['a', 'z', 75]
     source_node_from_fact = edge_values_list[0] # Source node (e.g., 'a')
     # Convert cost to integer and create a tuple (DestinationNode, Cost)
-    # edge_values_list[1] is DestinationNode, edge_values_list[2] is Cost
     edge_data = (edge_values_list[1], int(edge_values_list[2]))
     if source_node_from_fact in prolog_adjacency_list:
         prolog_adjacency_list[source_node_from_fact].append(edge_data)
@@ -34,7 +33,6 @@ for i in range(A2):
     heuristic_fact_dict = heuristic_facts[i] # Each fact is a dictionary, e.g., {'X': 'a', 'Y': 366}
     heuristic_values_list = list(heuristic_fact_dict.values()) # Extract values: ['a', 366]
     node_from_fact = heuristic_values_list[0] # Node (e.g., 'a')
-    # heuristic_values_list[1] is the Heuristic Value
     prolog_heuristic_values[node_from_fact] = int(heuristic_values_list[1]) # Heuristic value
 
 #print("Graph Structure (prolog_adjacency_list):", prolog_adjacency_list)
@@ -50,76 +48,74 @@ class Graph:
         return prolog_heuristic_values[n] # Accessing the global prolog_heuristic_values
 
     def a_star_algorithm(self, start, stop):
-        # In this open_lst is a lisy of nodes which have been visited, but who's
-        # neighbours haven't all been always inspected, It starts off with the start
-        # node
-        # And closed_lst is a list of nodes which have been visited
-        # and who's neighbors have been always inspected
+        # open_lst: Set of nodes that have been visited but not all their neighbors have been inspected.
+        # Starts initialized with the start node.
         open_lst = set([start])
+        # closed_lst: Set of nodes that have been visited and all their neighbors have been inspected.
         closed_lst = set([])
 
-        # poo has present distances from start to all other nodes
-        # the default value is +infinity
-        poo = {}
-        poo[start] = 0
+        # g_scores: Stores the actual cost (g-value) from the start_node to any given node.
+        g_scores = {}
+        g_scores[start] = 0 # Cost from start to start is 0.
 
-        # par contains an adjac mapping of all nodes
-        par = {}
-        par[start] = start
+        # parents: Maps a node to its predecessor in the path from the start_node.
+        # Used for reconstructing the path once the goal is reached.
+        parents = {}
+        parents[start] = start # The start node has no predecessor.
 
         while len(open_lst) > 0:
-            n = None
+            current_node = None
 
-            # it will find a node with the lowest value of f() -
-            for v in open_lst:
-                if n == None or poo[v] + self.h(v) < poo[n] + self.h(n):
-                    n = v;
+            # Select node from open_lst with the lowest f-score (f = g + h).
+            # This is the core of the A* algorithm's greedy but informed search.
+            for candidate_node in open_lst:
+                if current_node is None or g_scores[candidate_node] + self.h(candidate_node) < g_scores[current_node] + self.h(current_node):
+                    current_node = candidate_node
 
-            if n == None:
+            if current_node is None:
+                # This should not happen if a path exists and open_lst was not empty.
+                # Indicates an issue or that the graph is disconnected and goal is unreachable.
                 print('Path does not exist!')
                 return None
 
-            # if the current node is the stop
-            # then we start again from start
-            if n == stop:
-                reconst_path = []
+            # If the current_node is the stop_node, reconstruct and return the path.
+            if current_node == stop:
+                reconstructed_path = []
+                # Trace back from stop_node to start_node using the parents map.
+                while parents[current_node] != current_node:
+                    reconstructed_path.append(current_node)
+                    current_node = parents[current_node]
+                reconstructed_path.append(start) # Add the start_node itself.
+                reconstructed_path.reverse() # The path was traced backwards, so reverse it.
+                print('Path found: {}'.format(reconstructed_path))
+                return reconstructed_path
 
-                while par[n] != n:
-                    reconst_path.append(n)
-                    n = par[n]
-
-                reconst_path.append(start)
-
-                reconst_path.reverse()
-
-                print('Path found: {}'.format(reconst_path))
-                return reconst_path
-
-            # for all the neighbors of the current node do
-            for (m, weight) in self.get_neighbors(n):
-                # if the current node is not presentin both open_lst and closed_lst
-                # add it to open_lst and note n as it's par
-                if m not in open_lst and m not in closed_lst:
-                    open_lst.add(m)
-                    par[m] = n
-                    poo[m] = poo[n] + weight
-
-                # otherwise, check if it's quicker to first visit n, then m
-                # and if it is, update par data and poo data
-                # and if the node was in the closed_lst, move it to open_lst
+            # Process neighbors of the current_node.
+            for (neighbor_node, weight) in self.get_neighbors(current_node):
+                # If neighbor_node has not been visited (i.e., not in open_lst or closed_lst):
+                # Add it to open_lst for future exploration.
+                # Record current_node as its parent and calculate its g_score.
+                if neighbor_node not in open_lst and neighbor_node not in closed_lst:
+                    open_lst.add(neighbor_node)
+                    parents[neighbor_node] = current_node
+                    g_scores[neighbor_node] = g_scores[current_node] + weight
+                # Else, if neighbor_node has been visited (is in open_lst or potentially closed_lst):
+                # Check if the path through current_node offers a shorter g_score to reach neighbor_node.
                 else:
-                    if poo[m] > poo[n] + weight:
-                        poo[m] = poo[n] + weight
-                        par[m] = n
+                    # If a shorter path to neighbor_node is found via current_node:
+                    if g_scores.get(neighbor_node, float('inf')) > g_scores[current_node] + weight:
+                        g_scores[neighbor_node] = g_scores[current_node] + weight
+                        parents[neighbor_node] = current_node
+                        # If neighbor_node was in closed_lst, it means we found a better path to it.
+                        # So, it needs to be re-evaluated; move it back to open_lst.
+                        if neighbor_node in closed_lst:
+                            closed_lst.remove(neighbor_node)
+                            open_lst.add(neighbor_node)
 
-                        if m in closed_lst:
-                            closed_lst.remove(m)
-                            open_lst.add(m)
-
-            # remove n from the open_lst, and add it to closed_lst
-            # because all of his neighbors were inspected
-            open_lst.remove(n)
-            closed_lst.add(n)
+            # Move current_node from open_lst to closed_lst:
+            # All its neighbors have been inspected.
+            open_lst.remove(current_node)
+            closed_lst.add(current_node)
 
         print('Path does not exist!')
         return None
