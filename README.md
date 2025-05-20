@@ -45,7 +45,6 @@ This image file provides a visual representation of the graph used in both A* im
 
 [Link to Map](./Map.png)
 
-*(You can also embed the image directly if preferred, e.g., `![Map](./Map.png)`)*
 
 ## 🎓 Educational Insights
 This project offers several learning opportunities:
