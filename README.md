@@ -1,58 +1,94 @@
 # ✨ A* Search Algorithm
 
 ## 💡 Introduction
-This project demonstrates the A* search algorithm implemented in Python. The A* algorithm is a popular pathfinding algorithm that efficiently finds the shortest path between a start node and an end node in a graph. It achieves this by considering both the actual cost from the start (g-score) and an estimated heuristic cost to the end (h-score). This project showcases two approaches for managing the knowledge base (the graph data and heuristic values) and is designed for educational purposes to illustrate these concepts and data management techniques.
+This project provides a comprehensive demonstration of the A* search algorithm, a cornerstone of pathfinding and graph traversal in artificial intelligence. The A* algorithm is renowned for its ability to find the shortest path between two points in a graph by intelligently evaluating nodes based on two key metrics:
+
+*   **g-score:** The actual cost of the path from the starting node to the current node.
+*   **h-score:** A heuristic estimate of the cost from the current node to the goal node.
+
+This project offers two distinct implementations of the A* algorithm, each highlighting a different approach to managing the underlying knowledge base (the graph's structure and heuristic data). This dual-implementation approach is designed for educational purposes, providing a clear comparison of data management techniques in software development.
+
+## 🚀 Getting Started
+
+### Prerequisites
+Before you begin, ensure you have the following installed on your system:
+
+*   **Python 3.x:** This project is written in Python and requires a modern version of the interpreter.
+*   **SWI-Prolog:** The `A_Star_Prolog.py` script relies on SWI-Prolog to manage its knowledge base. You can download it from the official [SWI-Prolog website](https://www.swi-prolog.org/download/stable).
+
+### Installation
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/A-Star-Search-Algorithm.git
+   cd A-Star-Search-Algorithm
+   ```
+
+2. **Create a virtual environment:**
+   It is highly recommended to use a virtual environment to manage project dependencies and avoid conflicts with other Python projects.
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   ```
+
+3. **Install the dependencies:**
+   The `requirements.txt` file contains all the necessary Python packages for this project.
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## 🗂️ Files in This Project
--   `knowledge_base.pl` 🧠: Contains the graph's edges, weights, and heuristic values in Prolog syntax.
--   `A_Star_Prolog.py` 🧐: Implements the A* algorithm, loading its knowledge base from `knowledge_base.pl`.
--   `A_Star_Python.py` 🐍: Implements the A* algorithm, with the knowledge base defined directly in Python.
--   `Map.png` 🗺️: A visual representation of the graph used by the algorithms.
+-   `knowledge_base.pl` 🧠: A Prolog file containing the graph's structure, including edges, their associated costs, and the heuristic values for each node.
+-   `A_Star_Prolog.py` 🧐: An implementation of the A* algorithm that dynamically loads its knowledge base from the `knowledge_base.pl` file using the `pyswip` library.
+-   `A_Star_Python.py` 🐍: A self-contained implementation of the A* algorithm where the knowledge base is defined directly within the Python script.
+-   `Map.png` 🗺️: A visual representation of the graph, providing a helpful reference for understanding the search space.
+-   `requirements.txt` 📄: A file that lists the Python dependencies required to run the project.
 
 ## `knowledge_base.pl` 🧠
-This file defines the graph structure and heuristic information using Prolog facts.
--   **`edges(Node1, Node2, Cost).`**: Represents a directed edge from `Node1` to `Node2` with a given `Cost`.
--   **`hs(Node, HeuristicValue).`**: Represents the heuristic value (estimated cost to goal) for a given `Node`.
+This file serves as the external knowledge base for the `A_Star_Prolog.py` script. It uses Prolog's declarative syntax to define the graph's properties:
 
-This separation of the knowledge base allows for easy modification of the graph data without altering the Python code.
+-   **`edges(Node1, Node2, Cost).`**: This fact defines a directed edge from `Node1` to `Node2` with a specific `Cost`.
+-   **`hs(Node, HeuristicValue).`**: This fact assigns a `HeuristicValue` to a given `Node`, which is used by the A* algorithm to estimate the distance to the goal.
+
+By separating the knowledge base from the application logic, we can easily modify the graph's structure without making any changes to the Python code.
 
 ## `A_Star_Prolog.py` 🧐
-This Python script implements the A* algorithm.
--   **Knowledge Base:** It dynamically loads the graph data and heuristics by consulting `knowledge_base.pl` at runtime using the `pytholog` library.
--   **Dependencies:**
-    -   Python 3.x
-    -   `pytholog` library (`pip install pytholog`)
-    -   A Prolog interpreter (e.g., SWI-Prolog). Ensure it's installed and accessible in your system's PATH.
+This script showcases how to integrate Python with Prolog to create a powerful and flexible system.
+
+-   **Knowledge Base:** The script uses the `pyswip` library to load and query the `knowledge_base.pl` file. This allows the A* algorithm to access the graph's data dynamically at runtime.
+-   **Implementation Details:**
+    1.  The script initializes a `Prolog` object from the `pyswip` library.
+    2.  It then calls `prolog.consult("knowledge_base.pl")` to load the Prolog file.
+    3.  The script queries for all `edges/3` and `hs/2` facts and stores them in Python dictionaries.
+    4.  The A* algorithm is then executed using this dynamically loaded data.
 -   **How to Run:**
     ```bash
     python A_Star_Prolog.py
     ```
-    The script will then prompt you to enter the source and destination nodes.
+    The script will prompt you to enter the source and destination nodes for the pathfinding operation.
 
 ## `A_Star_Python.py` 🐍
-This Python script also implements the A* algorithm.
--   **Knowledge Base:** The graph data (adjacency list) and heuristic values are defined directly within the script as Python dictionaries. This makes the script self-contained but requires code modification to change the graph.
--   **Dependencies:**
-    -   Python 3.x
+This script provides a more traditional, self-contained implementation of the A* algorithm.
+
+-   **Knowledge Base:** The graph's adjacency list and heuristic values are defined directly within the script as Python dictionaries. This approach is simpler for smaller projects or when the graph data is static.
 -   **How to Run:**
     ```bash
     python A_Star_Python.py
     ```
-    The script will then prompt you to enter the source and destination nodes.
+    The script will prompt you to enter the source and destination nodes.
 
 ## `Map.png` 🗺️
-This image file provides a visual representation of the graph used in both A* implementations. It helps in understanding the connections between nodes and the overall layout of the search space.
+This image provides a visual representation of the graph used in both implementations of the A* algorithm. It can be a helpful tool for visualizing the search process and understanding the paths chosen by the algorithm.
 
-[Link to Map](./Map.png)
-
+![Map](./Map.png)
 
 ## 🎓 Educational Insights
-This project offers several learning opportunities:
--   **A* Algorithm:** Understand the core logic of the A* search algorithm, including concepts like open/closed lists, g-scores, h-scores, and f-scores.
--   **Knowledge Representation:** Compare two distinct methods of representing graph data:
-    -   **Declarative (Prolog):** Data is stored as facts in a separate `.pl` file, promoting separation of data and logic. This is useful for larger, more complex knowledge bases that might be used by multiple applications or require frequent updates by non-programmers.
-    -   **Programmatic (Python):** Data is embedded directly in the code using Python dictionaries. This is simpler for smaller graphs or when the graph is tightly coupled with the specific program.
--   **Prolog Integration:** See a practical example of how Python can interface with a Prolog knowledge base using libraries like `pytholog`.
--   **Code Reusability:** Notice how the core A* algorithm logic in the `Graph` class is largely the same in both Python scripts, with the main difference being how the graph data and heuristics are accessed.
+This project offers a wealth of learning opportunities for students and developers interested in AI, algorithms, and software design:
 
-By studying and comparing `A_Star_Prolog.py` and `A_Star_Python.py`, you can gain a deeper understanding of these different software design choices and their implications.
+-   **A* Algorithm:** Gain a deep understanding of the A* algorithm's core mechanics, including the roles of the open and closed lists, the calculation of g-scores and h-scores, and the process of path reconstruction.
+-   **Knowledge Representation:** Explore the trade-offs between two different approaches to knowledge representation:
+    -   **Declarative (Prolog):** Storing data in a separate, human-readable file promotes a clean separation of concerns and makes it easier to manage large and complex knowledge bases.
+    -   **Programmatic (Python):** Embedding data directly in the code is a simpler and more straightforward approach for smaller or more tightly integrated systems.
+-   **Python-Prolog Integration:** Discover how to bridge the gap between Python and Prolog using the `pyswip` library, enabling you to leverage the strengths of both languages in your applications.
+-   **Code Reusability:** Observe how the core logic of the A* algorithm remains consistent across both implementations, with the primary difference being the method of data access. This highlights the importance of modular design and a clear separation of concerns.
+
+By studying and experimenting with both `A_Star_Prolog.py` and `A_Star_Python.py`, you can develop a more nuanced understanding of these fundamental concepts and their practical applications.
