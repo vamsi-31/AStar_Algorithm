@@ -1,5 +1,5 @@
 """
-python_astar.py
+A_Star_Python.py
 ===============
 A* pathfinding on the Romania road map – pure Python, no external
 dependencies.  Great starting point for students who want to:
