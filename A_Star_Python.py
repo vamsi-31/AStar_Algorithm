@@ -37,7 +37,7 @@ adjacency_list = {
 
 class Graph:
     """
-    Represents a graph and provides the A* search algorithm.
+    Represents a graph and provides the A* algorithm.
     """
     def __init__(self, adj_list, h_vals):
         """
@@ -66,7 +66,7 @@ class Graph:
 
     def a_star_algorithm(self, start_node, stop_node):
         """
-        Performs the A* search algorithm to find the shortest path from start_node to stop_node.
+        Performs the A* algorithm to find the shortest path from start_node to stop_node.
         :param start_node: The starting node.
         :param stop_node: The destination node.
         :return: A list representing the path from start_node to stop_node, or None if no path exists.

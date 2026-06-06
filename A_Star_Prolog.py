@@ -18,22 +18,24 @@ A2 = len(heuristic_facts)
 
 # Process edge facts to populate prolog_adjacency_list
 for i in range(A1):
-    y = edge_facts[i]
-    Y = list(y.values()) # Extract values from the query result
-    J1 = Y[0] # Source node
+    edge_fact_dict = edge_facts[i] # Each fact is a dictionary, e.g., {'X': 'a', 'Y': 'z', 'Z': 75}
+    edge_values_list = list(edge_fact_dict.values()) # Extract values: ['a', 'z', 75]
+    source_node_from_fact = edge_values_list[0] # Source node (e.g., 'a')
     # Convert cost to integer and create a tuple (DestinationNode, Cost)
-    edge_data = (Y[1], int(Y[2]))
-    if J1 in prolog_adjacency_list:
-        prolog_adjacency_list[J1].append(edge_data)
+    # edge_values_list[1] is DestinationNode, edge_values_list[2] is Cost
+    edge_data = (edge_values_list[1], int(edge_values_list[2]))
+    if source_node_from_fact in prolog_adjacency_list:
+        prolog_adjacency_list[source_node_from_fact].append(edge_data)
     else:
-        prolog_adjacency_list[J1] = [edge_data]
+        prolog_adjacency_list[source_node_from_fact] = [edge_data]
 
 # Process heuristic facts to populate prolog_heuristic_values
 for i in range(A2):
-    Z = heuristic_facts[i]
-    Z1 = list(Z.values()) # Extract values from the query result
-    J2 = Z1[0] # Node
-    prolog_heuristic_values[J2] = int(Z1[1]) # Heuristic value
+    heuristic_fact_dict = heuristic_facts[i] # Each fact is a dictionary, e.g., {'X': 'a', 'Y': 366}
+    heuristic_values_list = list(heuristic_fact_dict.values()) # Extract values: ['a', 366]
+    node_from_fact = heuristic_values_list[0] # Node (e.g., 'a')
+    # heuristic_values_list[1] is the Heuristic Value
+    prolog_heuristic_values[node_from_fact] = int(heuristic_values_list[1]) # Heuristic value
 
 #print("Graph Structure (prolog_adjacency_list):", prolog_adjacency_list)
 #print("Heuristic Values (prolog_heuristic_values):", prolog_heuristic_values)
