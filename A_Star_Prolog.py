@@ -1,5 +1,5 @@
 """
-prolog_astar.py
+A_Star_Prolog.py
 ===============
 A* pathfinding using a Prolog knowledge base as the data source.
 
