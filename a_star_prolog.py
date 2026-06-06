@@ -1,102 +1,42 @@
 import pytholog as pl
 from collections import deque
 pro_kb = pl.KnowledgeBase("Project")
-D1 = {}
-D2 = {}
-pro_kb([
-    "hs(a,366)",
-    "hs(b,0)",
-    "hs(c,160)",
-    "hs(d,242)",
-    "hs(e,161)",
-    "hs(f,178)",
-    "hs(g,77)",
-    "hs(h,151)",
-    "hs(i,226)",
-    "hs(l,244)",
-    "hs(m,241)",
-    "hs(n,234)",
-    "hs(o,380)",
-    "hs(p,98)",
-    "hs(r,193)",
-    "hs(s,253)",
-    "hs(t,329)",
-    "hs(u,80)",
-    "hs(v,199)",
-    "hs(z,374)",
-    "edges(a,z,75)",
-    "edges(a,s,140)",
-    "edges(a,t,118)",
-    "edges(b,f,211)",
-    "edges(b,p,101)",
-    "edges(b,g,90)",
-    "edges(b,u,85)",
-    "edges(c,d,120)",
-    "edges(c,r,146)",
-    "edges(c,p,138)",
-    "edges(d,m,75)",
-    "edges(d,c,120)",
-    "edges(e,h,86)",
-    "edges(f,s,99)",
-    "edges(f,b,211)",
-    "edges(g,b,90)",
-    "edges(h,e,86)",
-    "edges(h,u,98)",
-    "edges(i,n,87)",
-    "edges(i,v,92)",
-    "edges(l,m,70)",
-    "edges(l,t,111)",
-    "edges(m,l,70)",
-    "edges(m,d,75)",
-    "edges(n,i,87)",
-    "edges(o,z,71)",
-    "edges(o,s,151)",
-    "edges(p,b,101)",
-    "edges(p,c,138)",
-    "edges(p,r,97)",
-    "edges(r,s,80)",
-    "edges(r,p,97)",
-    "edges(r,c,146)",
-    "edges(s,f,99)",
-    "edges(s,r,80)",
-    "edges(s,o,151)",
-    "edges(s,a,140)",
-    "edges(t,l,111)",
-    "edges(t,a,118)",
-    "edges(u,h,98)",
-    "edges(u,v,142)",
-    "edges(u,b,85)",
-    "edges(l,t,111)",
-    "edges(v,i,92)",
-    "edges(v,u,142)",
-    "edges(z,o,71)",
-    "edges(z,a,75)",
-])
-A1 = len(pro_kb.query(pl.Expr("edges(X,Y,Z)")))
-A2 = len(pro_kb.query(pl.Expr("hs(X,Y)")))
+# Load Prolog facts from the external knowledge base file
+pro_kb.consult("knowledge_base.pl")
+
+prolog_adjacency_list = {} # Dictionary to store graph structure (edges and costs) from Prolog facts
+prolog_heuristic_values = {} # Dictionary to store heuristic values for nodes from Prolog facts
+
+# Populate prolog_adjacency_list (graph structure) and prolog_heuristic_values (heuristic values) from the knowledge base
+# Query for all edge facts
+edge_facts = pro_kb.query(pl.Expr("edges(X,Y,Z)"))
+# Query for all heuristic facts
+heuristic_facts = pro_kb.query(pl.Expr("hs(X,Y)"))
+
+A1 = len(edge_facts)
+A2 = len(heuristic_facts)
+
+# Process edge facts to populate prolog_adjacency_list
 for i in range(A1):
-    y = pro_kb.query(pl.Expr("edges(X,Y,Z)"))[i]
-    Y = y.values()
-    Y = list(Y)
-    J1 = Y[0]
-    if J1 in D1:
-        Y.remove(J1)
-        Y[1] = int(Y[1])
-        Y = tuple(Y)
-        D1[J1].append(Y)
+    y = edge_facts[i]
+    Y = list(y.values()) # Extract values from the query result
+    J1 = Y[0] # Source node
+    # Convert cost to integer and create a tuple (DestinationNode, Cost)
+    edge_data = (Y[1], int(Y[2]))
+    if J1 in prolog_adjacency_list:
+        prolog_adjacency_list[J1].append(edge_data)
     else:
-        Y.remove(J1)
-        Y[1] = int(Y[1])
-        D1[J1] = [tuple(Y)]
-    if i < A2:
-        Z = pro_kb.query(pl.Expr("hs(X,Y)"))[i]
-        Z1 = Z.values()
-        Z1 = list(Z1)
-        J2 = Z1[0]
-        Z1.remove(J2)
-        D2[J2] = int(Z1[0])
-#print(D1)
-#print(D2)
+        prolog_adjacency_list[J1] = [edge_data]
+
+# Process heuristic facts to populate prolog_heuristic_values
+for i in range(A2):
+    Z = heuristic_facts[i]
+    Z1 = list(Z.values()) # Extract values from the query result
+    J2 = Z1[0] # Node
+    prolog_heuristic_values[J2] = int(Z1[1]) # Heuristic value
+
+#print("Graph Structure (prolog_adjacency_list):", prolog_adjacency_list)
+#print("Heuristic Values (prolog_heuristic_values):", prolog_heuristic_values)
 class Graph:
     def __init__(self, adjac_lis):
         self.adjac_lis = adjac_lis
@@ -105,7 +45,7 @@ class Graph:
         return self.adjac_lis[v]
 
     def h(self, n):
-        return D2[n]
+        return prolog_heuristic_values[n] # Accessing the global prolog_heuristic_values
 
     def a_star_algorithm(self, start, stop):
         # In this open_lst is a lisy of nodes which have been visited, but who's
@@ -181,7 +121,7 @@ class Graph:
 
         print('Path does not exist!')
         return None
-graph1 = Graph(D1)
+graph1 = Graph(prolog_adjacency_list) # Use the renamed variable for instantiation
 source=input('Enter the Source name:').lower()
 destination=input('Enter the Desitination Name:').lower()
 graph1.a_star_algorithm(source,destination)
