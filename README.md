@@ -1,4 +1,4 @@
-# ✨ A* Search Algorithm: Prolog vs. Python Knowledge Base
+# ✨ A* Search Algorithm
 
 ## 💡 Introduction
 This project demonstrates the A* search algorithm implemented in Python. The A* algorithm is a popular pathfinding algorithm that efficiently finds the shortest path between a start node and an end node in a graph. It achieves this by considering both the actual cost from the start (g-score) and an estimated heuristic cost to the end (h-score). This project showcases two approaches for managing the knowledge base (the graph data and heuristic values) and is designed for educational purposes to illustrate these concepts and data management techniques.
